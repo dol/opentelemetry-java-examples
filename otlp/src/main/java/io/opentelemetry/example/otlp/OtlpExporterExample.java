@@ -19,7 +19,7 @@ import io.opentelemetry.context.Scope;
  * Example code for setting up the OTLP exporters.
  *
  * <p>If you wish to use this code, you'll need to run a copy of the collector locally, on the
- * default port. There is a docker-compose configuration for doing this in the docker subdirectory
+ * default port. There is a docker compose configuration for doing this in the docker subdirectory
  * of this module.
  */
 public final class OtlpExporterExample {

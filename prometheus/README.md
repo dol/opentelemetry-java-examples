@@ -11,9 +11,9 @@ metrics via HTTP.
 
 ## Prerequisites
 
-* Java 1.7
-* Docker 19.03
-* Docker compose
+- Java 1.7
+- Docker 19.03
+- Docker compose
 
 ## 1 - Compile
 
@@ -26,7 +26,7 @@ metrics via HTTP.
 Start the application and prometheus via docker compose
 
 ```shell
-docker-compose up
+docker compose up
 ```
 
 ## 3 - View metrics

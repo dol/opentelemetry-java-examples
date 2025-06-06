@@ -12,7 +12,7 @@ The example uses the following elements:
   and exporting to the standard output with
   the [logging exporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/debugexporter).
 - A spring configuration to suppress spans for the `/actuator` endpoint
-- A spring configuration to set OTLP headers dynamically 
+- A spring configuration to set OTLP headers dynamically
   (not needed for the example - it shows how to configure exporters programmatically)
 
 # Description of the instrumentation set-up
@@ -25,23 +25,26 @@ We have included the [OpenTelemetry Spring starter](https://opentelemetry.io/doc
 
 ## Prerequisites
 
-* GraalVM for Java 17
-* Docker compose
+- GraalVM for Java 17
+- Docker compose
 
 # How to run
 
 Build the GraalVM native image
+
 ```shell
 cd spring-native
 ../gradlew bootBuildImage --imageName=otel-native-graalvm
 ```
 
 Run the application and the collector with docker compose
+
 ```shell
-docker-compose up
+docker compose up
 ```
 
 In a separate shell, exercise the application by calling its endpoint
+
 ```shell
 curl http://localhost:8080/ping
 ```
@@ -49,6 +52,7 @@ curl http://localhost:8080/ping
 Watch for spans, metrics, and logs in the collector log output.
 
 Example of the beginning of the collector log after the ping:
+
 ```
 graal-native-collector-1  | Span #0
 graal-native-collector-1  |     Trace ID       : 668c936f4f0580bac9db40162e8159fa

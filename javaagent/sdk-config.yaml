@@ -1,4 +1,6 @@
-# Copy of https://github.com/open-telemetry/opentelemetry-configuration/blob/v0.3.0/examples/sdk-config.yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/refs/tags/v0.4.0/schema/opentelemetry_configuration.json
+#
+# Copy of https://github.com/open-telemetry/opentelemetry-configuration/blob/v0.4.0/examples/sdk-config.yaml
 # with the following changes:
 # - OpenTelemetry Java Agent properties added at .instrumentation.java.
 # - OTLP exporter endpoints modified to point to http://collector:4318/v1/{path} to export to collector from docker-compose.yml
@@ -13,7 +15,7 @@
 # vars defined in https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/.
 
 # The file format version.
-file_format: "0.3"
+file_format: "0.4"
 
 # Configure if the SDK is disabled or not. This is not required to be provided to ensure the SDK isn't disabled, the default value when this is not provided is for the SDK to be enabled.
 disabled: false
@@ -35,8 +37,14 @@ attribute_limits:
 
 # Configure text map context propagators.
 propagator:
-  # Configure the set of propagators to include in the composite text map propagator.
-  composite: [ tracecontext, baggage ]
+  # Configure the propagators in the composite text map propagator. Entries from .composite_list are appended to the list here with duplicates filtered out.
+  # Built-in propagator keys include: tracecontext, baggage, b3, b3multi, jaeger, ottrace. Known third party keys include: xray.
+  # If the resolved list of propagators (from .composite and .composite_list) is empty, a noop propagator is used.
+  composite:
+    - # Include the w3c trace context propagator.
+      tracecontext:
+    - # Include the w3c baggage propagator.
+      baggage:
 
 # Configure tracer provider.
 tracer_provider:
@@ -55,17 +63,15 @@ tracer_provider:
         # Configure exporter.
         exporter:
           # Configure exporter to be OTLP.
-          otlp:
-            # Configure protocol.
-            protocol: http/protobuf
+          otlp_http:
             # Configure endpoint.
             endpoint: http://collector:4318/v1/traces
             # Configure certificate.
-            certificate:
+            certificate_file:
             # Configure mTLS private client key.
-            client_key:
+            client_key_file:
             # Configure mTLS client certificate.
-            client_certificate:
+            client_certificate_file:
             # Configure compression.
             compression: gzip
             # Configure max time (in milliseconds) to wait for each export.
@@ -133,17 +139,15 @@ meter_provider:
         # Configure exporter.
         exporter:
           # Configure exporter to be OTLP.
-          otlp:
-            # Configure protocol.
-            protocol: http/protobuf
+          otlp_http:
             # Configure endpoint.
             endpoint: http://collector:4318/v1/metrics
             # Configure certificate.
-            certificate:
+            certificate_file:
             # Configure mTLS private client key.
-            client_key:
+            client_key_file:
             # Configure mTLS client certificate.
-            client_certificate:
+            client_certificate_file:
             # Configure compression.
             compression: gzip
             # Configure max time (in milliseconds) to wait for each export.
@@ -172,17 +176,15 @@ logger_provider:
         # Configure exporter.
         exporter:
           # Configure exporter to be OTLP.
-          otlp:
-            # Configure protocol.
-            protocol: http/protobuf
+          otlp_http:
             # Configure endpoint.
             endpoint: http://collector:4318/v1/logs
             # Configure certificate.
-            certificate:
+            certificate_file:
             # Configure mTLS private client key.
-            client_key:
+            client_key_file:
             # Configure mTLS client certificate.
-            client_certificate:
+            client_certificate_file:
             # Configure compression.
             compression: gzip
             # Configure max time (in milliseconds) to wait for each export.
@@ -195,7 +197,6 @@ logger_provider:
     attribute_value_length_limit: # Configure max log record attribute count. Overrides attribute_limits.attribute_count_limit.
     # Configure max attribute count. Overrides .attribute_limits.attribute_count_limit.
     attribute_count_limit: 128
-
 
 # Configure instrumentation.
 instrumentation:
