@@ -39,19 +39,28 @@ tracer_provider:
 
   # Configure sampling to exclude health check endpoints
   sampler:
-    rule_based_routing:
-      fallback_sampler:
-        always_on:
-      # Filter to spans of this span_kind. Must be one of: SERVER, CLIENT, INTERNAL, CONSUMER, PRODUCER.
-      span_kind: SERVER   # only apply to server spans
-      # List of rules describing spans to drop. Spans are dropped if they match one of the rules.
-      rules:
-        # The action to take when the rule is matches. Must be of: DROP, RECORD_AND_SAMPLE.
-        - action: DROP
-          # The span attribute to match against.
-          attribute: url.path
-          # The pattern to compare the span attribute to.
-          pattern: /actuator.*
+    parent_based:
+      root:
+        cel_based:
+          fallback_sampler:
+            always_on:
+          expressions:
+            # Drop health check endpoints
+            - action: DROP
+              expression: spanKind == 'SERVER' && attribute['url.path'].startsWith('/health')
+            # Drop actuator endpoints
+            - action: DROP
+              expression: spanKind == 'SERVER' && attribute['url.path'].startsWith('/actuator')
+            # Sample only HTTP GET requests with successful responses
+            - action: RECORD_AND_SAMPLE
+              expression: spanKind == 'SERVER' && attribute['http.method'] == 'GET' && attribute['http.status_code'] < 400
+            # Selectively sample based on span name
+            - action: RECORD_AND_SAMPLE
+              expression: name.contains('checkout') || name.contains('payment')
+            # Drop spans with specific name patterns
+            - action: DROP
+              expression: name.matches('.*internal.*') && spanKind == 'INTERNAL'
+
 
 meter_provider:
   readers:

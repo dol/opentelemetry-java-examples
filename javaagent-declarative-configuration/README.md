@@ -30,13 +30,26 @@ curl -L -o opentelemetry-javaagent.jar https://github.com/open-telemetry/opentel
 ../gradlew bootJar
 ```
 
-### Step 2: Run with OpenTelemetry Java Agent
+### Step 2: Run aspire-dashboard as OTEL collector and dashboard
+
+```bash
+docker run --rm -it \
+    -p 18888:18888 \
+    -p 4317:18889 \
+    -p 4318:18890 \
+    -e ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true \
+    --name aspire-dashboard \
+    mcr.microsoft.com/dotnet/aspire-dashboard:latest
+```
+
+### Step 3: Run with OpenTelemetry Java Agent
 
 ```bash
 # From the javaagent-declarative-configuration directory
 
 # Run with the OpenTelemetry Java Agent and contrib extension
 java -javaagent:opentelemetry-javaagent.jar \
+     -Dotel.javaagent.extensions=../../opentelemetry-java-contrib/cel-sampler/build/libs/opentelemetry-cel-sampler-1.53.0-alpha-SNAPSHOT-dist.jar \
      -Dotel.experimental.config.file=$(pwd)/otel-agent-config.yaml \
      -jar build/libs/javaagent-declarative-configuration.jar
 ```
